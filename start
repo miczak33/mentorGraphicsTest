@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd $(dirname $0)
+java -DSTOP.PORT=8887 -DSTOP.KEY=railo -javaagent:lib/ext/railo-inst.jar -jar start.jar --module=http jetty.port=8888
