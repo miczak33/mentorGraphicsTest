@@ -161,6 +161,10 @@ header {
 	right: 10px;
 }
 
+.delete {
+	color:red;
+}
+
 .previous:hover, .next:hover {
 	opacity: .6;
 }
@@ -172,6 +176,34 @@ header {
 .disabled {
 	opacity: .2 !important;
 	cursor: default;
+}
+
+.no-display{
+	display:none;
+}
+
+.success,
+.error {
+	padding: 5px;
+	margin-bottom: 10px;
+}
+
+.success {
+	border: 1px solid #7ccc63;
+	background-color: #cff4c3;
+}
+
+.error {
+	border: 1px solid #e24944;
+	background-color: #f4bbba;
+}
+
+.success span{
+	color:#1f4f01;
+}
+
+.error span {
+	color:#600100;
 }
 
 footer {
