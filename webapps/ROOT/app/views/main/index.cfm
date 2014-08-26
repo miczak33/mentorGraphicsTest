@@ -15,7 +15,7 @@
 				<p><strong>Thumbnail File</strong> <span id="large-thumb">#rc.templates[1].getThumbnail()#</span></p>
 				<p><strong>Large Image File</strong> <span id="large-image">#rc.templates[1].getLarge()#</span></p>
 			</div>
-			<div><a href="##" class="delete">Delete</a><a href="##" class="edit"></div>
+			<div><a href="##" class="delete">Delete</a><a href="##" id="edit">Edit</a><a href="##" id="add">Add</a></div>
 		</div>
 	</div>
 	<div class="thumbnail-outer">

@@ -3,6 +3,7 @@ var templateViewer = {
 	settings: {
 		numberImagesToDisplay : 4,
 		largeImageFolder : "/app/assets/img/large",
+		thumbImageFolder : "/app/assets/img/thumbnails",
 		imageMargin : 8,
 		scrollSpeed : 500
 	},
@@ -21,6 +22,8 @@ var templateViewer = {
 		this.$nextLink = $(".next");
 		this.$currentDisplay = 1;
 		this.$deleteLink = $(".delete");
+		this.$editLink = $("#edit");
+		this.$addLink = $("#add");
 		this.$mainImageTitle = $("#large-title");
 		this.$mainImageDescription = $("#large-description");
 		this.$mainImageCost = $("#large-cost");
@@ -28,6 +31,17 @@ var templateViewer = {
 		this.$mainImageThumb = $("#large-thumb");
 		this.$mainImageSrc = $("#large-image");
 		this.$messageResult = $("#messageResult");
+		this.$templateModal = $("#templateModal");
+		this.$modalId = $("#modalId");
+		this.$modalTitle = $("#modalTitle");
+		this.$modalDescription = $("#modalDescription");
+		this.$modalCost = $("#modalCost");
+		this.$modalImage = $("#modalImage");
+		this.$modalFileUpload = $("#templateFile");
+		this.$modalFiles = "";
+		this.$templateForm = $("#templateForm");
+		this.$modalType = $("#modalType");
+		this.$modalIdGroup = $("#idGroup");
 
 	},
 
@@ -37,7 +51,22 @@ var templateViewer = {
 		this.$previousLink.on("click", this.scrollLeft);
 		this.$nextLink.on("click", this.scrollRight);
 		this.$deleteLink.on("click", this.deleteTemplate);
+		this.$editLink.on("click", this.editTemplate);
+		this.$addLink.on("click", this.addTemplate);
+		this.$templateForm.on("submit", this.uploadFiles);
 
+	},
+
+	addTemplate: function(){
+		templateViewer.$modalId.val("");
+		templateViewer.$modalIdGroup.show();
+		templateViewer.$modalTitle.val("");
+		templateViewer.$modalDescription.val("");
+		templateViewer.$modalCost.val("");
+		templateViewer.$modalImage.html("");
+		templateViewer.$templateModal.find("h1").text("Add Template");
+		templateViewer.$modalType.val("add");
+		templateViewer.$templateModal.modal();
 	},
 
 	deleteTemplate: function(){
@@ -59,8 +88,51 @@ var templateViewer = {
 		this.$messageResult.removeClass("success no-display").addClass("error").find("span").html(message);
 	},
 
-	displaySuccessMessage: function(){
+	displaySuccessMessage: function(message){
 		this.$messageResult.removeClass("error no-display").addClass("success").find("span").html(message);
+	},
+
+	editTemplate: function(){
+		//populate the modal
+		templateViewer.$modalId.val(templateViewer.$mainImageId.html());
+		templateViewer.$modalIdGroup.hide();
+		templateViewer.$modalTitle.val(templateViewer.$mainImageTitle.html());
+		templateViewer.$modalDescription.val(templateViewer.$mainImageDescription.html());
+		templateViewer.$modalCost.val(templateViewer.$mainImageCost.html());
+		templateViewer.$modalImage.html(templateViewer.$mainImageSrc.html());
+		templateViewer.$templateModal.find("h1").text("Edit Template");
+		templateViewer.$modalType.val("edit");
+		templateViewer.$templateModal.modal();
+	},
+
+	handleEditTemplateResult: function(objResult){
+		if(objResult.RESULT == "success"){
+			templateViewer.displaySuccessMessage("Template Successfully Updated");
+			var currentLink = $("a[title='"+templateViewer.$mainImageId.html()+"']");
+			var index = templateViewer.$thumbnails.index(currentLink);
+			templateViewer.$thumbnails.eq(index).trigger("click");
+		}else{
+			templateViewer.displayErrorMessage("Error Saving Template");
+		}
+	},
+
+	handleNewTemplateResult: function(objResult){
+		if(objResult.RESULT == "success"){
+			templateViewer.displaySuccessMessage("Template SuccessFully Created");
+			//create the filmstrip item from clone
+			var clone = templateViewer.$thumbnails.first();
+			clone.attr("title", objResult.ID).removeClass("active");
+			clone.find("img").attr("src", templateViewer.settings.thumbImageFolder + "/" + objResult.ID + "-m.jpg?" + templateViewer.timenow()).attr("alt", objResult.ID + "-m");
+			clone.find("span").html(objResult.ID);
+			clone.insertAfter(".thumbnails .group a:last");
+
+		}else{
+			templateViewer.displayErrorMessage("Error Creating Template");
+		}
+	},
+
+	prepareUpload: function(e){
+		templateViewer.$modalFiles = e.target.files;
 	},
 
 	removeTemplate: function(){
@@ -93,7 +165,8 @@ var templateViewer = {
 			templateViewer.$mainImageId.html(objResult.ID);
 			templateViewer.$mainImageThumb.html(objResult.THUMBNAIL);
 			templateViewer.$mainImageSrc.html(objResult.LARGE);
-			templateViewer.$mainImage.attr("src", templateViewer.settings.largeImageFolder + "/" + main.attr("title") + "-b.jpg");
+			templateViewer.$mainImage.attr("src", templateViewer.settings.largeImageFolder + "/" + main.attr("title") + "-b.jpg?" + templateViewer.timenow() );
+			main.find("img").attr("src", templateViewer.settings.thumbImageFolder + "/" + main.attr("title") + "-m.jpg?" + templateViewer.timenow() );
 		});
 		return false;
 	},
@@ -139,6 +212,36 @@ var templateViewer = {
 
 	},
 
+	uploadFiles: function(e){
+		//Inspiration from Ben NAdel
+		var submitType = (templateViewer.$modalType.val() == "add") ? "addTemplate" : "editTemplate";
+		var jThis = $(this);
+		var strName = ("uploader" + (new Date()).getTime());
+		var jFrame = $( "<iframe name=\"" + strName + "\" src=\"about:blank\" />" );
+		jFrame.css( "display", "none" );
+		jFrame.load(function (objEvent){
+			var objUploadBody = window.frames[ strName ].document.getElementsByTagName( "body" )[ 0 ];
+			var jBody = $( objUploadBody );
+			var objData = $.parseJSON(eval("(" + jBody.text() + ")" ));
+			$.modal.close();
+
+			if(submitType == "addTemplate"){
+				templateViewer.handleNewTemplateResult(objData);
+			}else{
+				templateViewer.handleEditTemplateResult(objData);
+			}
+			
+			setTimeout(function(){
+				jFrame.remove();
+			}, 100);
+		});
+        // Attach to body.
+        $( "body:first" ).append( jFrame );
+ 		
+        jThis.attr( "action", "/index.cfm?action=main." + submitType ).attr( "method", "post" ).attr( "enctype", "multipart/form-data" ).attr( "encoding", "multipart/form-data" ).attr( "target", strName );          
+
+	},
+
 	calculateAnimationDistance : function(direction){
 		var groupWidth = (this.$thumbnails.outerWidth() + (templateViewer.settings.imageMargin * 2)) * templateViewer.settings.numberImagesToDisplay;
 		if(direction == "left"){
@@ -146,5 +249,21 @@ var templateViewer = {
 		}else{
 			return parseInt(this.$thumbnailGroup.css("left")) - groupWidth;
 		}
+	},
+
+	timenow: function(){
+		var now = new Date(),
+			ampm = "am",
+			h = now.getHours(),
+			m = now.getMinutes(),
+			s = now.getSeconds();
+		if(h >= 12){
+			if(h > 12) h -= 12;
+			ampm = "pm";
+		}
+		if(m < 10) m = "0" + m;
+		if(s < 10) s = "0" + s;
+		return now.toLocaleDateString()+ h + m + s + ampm;
 	}
+
 };

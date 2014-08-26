@@ -206,6 +206,19 @@ header {
 	color:#600100;
 }
 
+.templateInputGroup {
+	text-align:left;
+}
+.templateInputGroup input {
+	width:100%;
+	margin-bottom:5px;
+	line-height:20px;
+}
+
+#modalImage{
+	font-weight:bold;
+}
+
 footer {
 	font-size: 12px;
 	padding: 25px 0 0 0;

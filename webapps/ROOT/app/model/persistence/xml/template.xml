@@ -4,9 +4,9 @@
 	
 	<template>
 		<id>7124</id>
-		<title>My Great Template</title>
-		<description>This is a template suited for a professional business site. Original layered Photoshop .psd is included.</description>
-		<cost>$45</cost>
+		<title>test title</title>
+		<description>Test Description</description>
+		<cost>$37</cost>
 		<thumbnail>7124-m.jpg</thumbnail>
 		<large>7124-b.jpg</large>
 	</template>
@@ -74,4 +74,4 @@
 		<thumbnail>7155-m.jpg</thumbnail>
 		<large>7155-b.jpg</large>
 	</template>
-</templates>
+<template><id>8888</id><title>meh</title><description>mehh</description><cost>$40</cost><thumbnail>8888-m.jpg</thumbnail><large>8888-b.jpg</large></template></templates>

@@ -9,6 +9,41 @@ component accessors="true" implements="ITemplateDAO" {
 		return this;
 	}
 
+	public struct function addTemplate(required any template){
+		var result = {successful = true};
+		try{
+			//Load the file
+			var objFile = fileRead(constructFilePath());
+			//Parse the file
+			var xmlTemplates = xmlParse(objFile);
+			//Create the new template node
+			var xmlTemplate = xmlElemNew(xmlTemplates, "template");
+			arrayAppend(xmlTemplate.xmlChildren, xmlElemNew(xmlTemplates, "id"));
+			arrayAppend(xmlTemplate.xmlChildren, xmlElemNew(xmlTemplates, "title"));
+			arrayAppend(xmlTemplate.xmlChildren, xmlElemNew(xmlTemplates, "description"));
+			arrayAppend(xmlTemplate.xmlChildren, xmlElemNew(xmlTemplates, "cost"));
+			arrayAppend(xmlTemplate.xmlChildren, xmlElemNew(xmlTemplates, "thumbnail"));
+			arrayAppend(xmlTemplate.xmlChildren, xmlElemNew(xmlTemplates, "large"));
+			//Populate the xml based on bean
+			xmlTemplate.xmlChildren[1].xmlText = arguments.template.getId();
+			xmlTemplate.xmlChildren[2].xmlText = arguments.template.getTitle();
+			xmlTemplate.xmlChildren[3].xmlText = arguments.template.getDescription();
+			xmlTemplate.xmlChildren[4].xmlText = arguments.template.getCost();
+			xmlTemplate.xmlChildren[5].xmlText = arguments.template.getThumbnail();
+			xmlTemplate.xmlChildren[6].xmlText = arguments.template.getLarge();
+
+			arrayAppend(xmlTemplates.xmlRoot.xmlChildren, xmlTemplate);
+
+			//save the file again
+			fileWrite(constructFilePath(), "#toString(xmlTemplates)#");
+
+		} catch (any e){
+			result.successful = false;
+			result.errorMsg = e.detail;
+		}
+		return result;
+	}
+
 	public any function deleteTemplate(required numeric id){
 		var result = {successful = true};
 		try{
@@ -21,6 +56,33 @@ component accessors="true" implements="ITemplateDAO" {
 			//Now delete the node
 			deleteNodes(xmlTemplates, selectedElement);
 			//save the file
+			fileWrite(constructFilePath(), "#toString(xmlTemplates)#");
+
+		} catch (any e){
+			result.successful = false;
+			result.errorMsg = e.detail;
+		}
+
+		return result;
+	}
+
+	public any function editTemplate(required any template){
+		var result = {successful = true};
+		try{
+			//Load the file
+			var objFile = fileRead(constructFilePath());
+			//Parse the file
+			var xmlTemplates = xmlParse(objFile);
+			//Search for the Id using xpath
+			var selectedElement = xmlSearch(xmlTemplates, "//*[text()='#arguments.template.getId()#']/..");
+			//POPULATE XML NODE AND SAVE IT.
+			selectedElement[1].xmlChildren[1].xmlText = arguments.template.getId();
+			selectedElement[1].xmlChildren[2].xmlText = arguments.template.getTitle();
+			selectedElement[1].xmlChildren[3].xmlText = arguments.template.getDescription();
+			selectedElement[1].xmlChildren[4].xmlText = arguments.template.getCost();
+			selectedElement[1].xmlChildren[5].xmlText = arguments.template.getThumbnail();
+			selectedElement[1].xmlChildren[6].xmlText = arguments.template.getLarge();
+			//save the file again
 			fileWrite(constructFilePath(), "#toString(xmlTemplates)#");
 
 		} catch (any e){
