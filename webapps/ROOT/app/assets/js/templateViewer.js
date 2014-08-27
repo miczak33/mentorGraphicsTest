@@ -47,7 +47,7 @@ var templateViewer = {
 
 	bindUIElements: function(){
 
-		this.$thumbnails.on("click", this.setMainImage);
+		$(document).on("click", ".thumbnails .group a", this.setMainImage);
 		this.$previousLink.on("click", this.scrollLeft);
 		this.$nextLink.on("click", this.scrollRight);
 		this.$deleteLink.on("click", this.deleteTemplate);
@@ -120,14 +120,30 @@ var templateViewer = {
 		if(objResult.RESULT == "success"){
 			templateViewer.displaySuccessMessage("Template SuccessFully Created");
 			//create the filmstrip item from clone
-			var clone = templateViewer.$thumbnails.first();
+			var clone = templateViewer.$thumbnails.first().clone();
 			clone.attr("title", objResult.ID).removeClass("active");
 			clone.find("img").attr("src", templateViewer.settings.thumbImageFolder + "/" + objResult.ID + "-m.jpg?" + templateViewer.timenow()).attr("alt", objResult.ID + "-m");
 			clone.find("span").html(objResult.ID);
-			clone.insertAfter(".thumbnails .group a:last");
+			$(".thumbnails .group a:last").after(clone);
+			//Refresh the cached variable
+			templateViewer.$thumbnails = $(".thumbnails .group a");
+			//Move to the last item (created)
+			templateViewer.moveToLastItem();
+			//select and trigger
+			templateViewer.$thumbnails.last().trigger("click");	
 
 		}else{
 			templateViewer.displayErrorMessage("Error Creating Template");
+		}
+	},
+
+	moveToLastItem: function(){
+		var distance = templateViewer.calculateAnimationLastItem();
+		if(distance > 0){
+			templateViewer.$thumbnailGroup.animate({"left":-1*distance}, 500, function(){
+				templateViewer.$nextLink.addClass("disabled");
+				templateViewer.$previousLink.removeClass("disabled");
+			});
 		}
 	},
 
@@ -248,6 +264,22 @@ var templateViewer = {
 			return parseInt(this.$thumbnailGroup.css("left")) + groupWidth;
 		}else{
 			return parseInt(this.$thumbnailGroup.css("left")) - groupWidth;
+		}
+	},
+
+	calculateAnimationLastItem: function(){
+		var groupWidth = (templateViewer.$thumbnails.outerWidth() + (templateViewer.settings.imageMargin * 2)) * templateViewer.settings.numberImagesToDisplay;
+		var timesToScroll = (templateViewer.$thumbnails.length / templateViewer.settings.numberImagesToDisplay);
+		if( timesToScroll > 1){
+			if(templateViewer.$thumbnails.length % templateViewer.settings.numberImagesToDisplay == 0){
+				templateViewer.$currentDisplay += (timesToScroll - 1);
+				return parseInt(templateViewer.$thumbnailGroup.css("left")) + (groupWidth * (timesToScroll - 1));
+			}else{
+				templateViewer.$currentDisplay += (Math.floor(timesToScroll));
+				return parseInt(templateViewer.$thumbnailGroup.css("left")) + (groupWidth * (Math.floor(timesToScroll)));
+			}
+		}else{
+			return parseInt(templateViewer.$thumbnailGroup.css("left")) + groupWidth;
 		}
 	},
 
