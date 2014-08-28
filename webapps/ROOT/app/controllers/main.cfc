@@ -1,11 +1,6 @@
-component accessors="true" {
+component accessors="true" extends="controller" {
 
 	property name="templateService" getter="false";
-
-	public function init(fw){
-		variables.fw = arguments.fw;
-		return this;
-	}
 
 	public function index(rc){
 		rc.templates = variables.templateService.getAllTemplates();
@@ -43,7 +38,8 @@ component accessors="true" {
 				message = response.errorMsg
 			};
 		}
-		variables.fw.renderData("JSON", serializeJSON(jsonOutput));
+		//variables.fw.renderData("JSON", serializeJSON(jsonOutput));
+		renderJSONAsHTML(jsonOutput);
 	}
 
 	public function deleteTemplate(rc){
@@ -71,7 +67,8 @@ component accessors="true" {
 				message = response.errorMsg
 			}
 		}
-		variables.fw.renderData("JSON", serializeJSON(jsonOutput));
+		//variables.fw.renderData("JSON", serializeJSON(jsonOutput));
+		renderJSONAsHTML(jsonOutput);
 	}
 
 }

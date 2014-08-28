@@ -238,7 +238,9 @@ var templateViewer = {
 		jFrame.load(function (objEvent){
 			var objUploadBody = window.frames[ strName ].document.getElementsByTagName( "body" )[ 0 ];
 			var jBody = $( objUploadBody );
-			var objData = $.parseJSON(eval("(" + jBody.text() + ")" ));
+			
+			var objData = $.parseJSON(jBody.text());
+			console.log(jBody);
 			$.modal.close();
 
 			if(submitType == "addTemplate"){
