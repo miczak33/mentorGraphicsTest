@@ -23,10 +23,10 @@ component output="false" accessors="true"  {
 	public function saveImage(required any image, required string imagePath, boolean overwrite=true, numeric quality=.95){
 		var result = "success";
 		try{
-			imageWrite(savedTemplate, expandPath("/app/assets/img/thumbnails/#arguments.id#-m.jpg"), true, .95);
+			imageWrite(arguments.image, arguments.imagePath, arguments.overwrite, arguments.quality);
 		}catch(any e){
 			//TODO: Log and report error
-			throw "An error occurred while trying to save image";
+			throw "An error occurred while trying to save image - #e.message#";
 		}
 		return result;
 	}

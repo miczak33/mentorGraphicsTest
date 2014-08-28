@@ -9,7 +9,12 @@ component accessors="true" {
 	}
 
 	public function getAllTemplates(){
-		return variables.templateDAO.getTemplates();
+		var allTemplates = [];
+		allTemplates = variables.templateDAO.getTemplates();
+		if(!arrayLen(allTemplates)){
+			arrayAppend(allTemplates, new app.model.template.templateBean());
+		}
+		return allTemplates;
 	}
 
 	public function getTemplate(required numeric id){

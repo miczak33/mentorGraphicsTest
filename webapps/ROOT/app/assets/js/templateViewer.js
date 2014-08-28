@@ -11,6 +11,10 @@ var templateViewer = {
 	init: function(){
 		this.cacheElements();
 		this.bindUIElements();
+		//disable right arrow if total thumbs <= 4
+		if(this.$thumbnails.length <= 4){
+			templateViewer.$nextLink.addClass("disabled");
+		}
 	},
 
 	cacheElements: function(){
@@ -42,6 +46,9 @@ var templateViewer = {
 		this.$templateForm = $("#templateForm");
 		this.$modalType = $("#modalType");
 		this.$modalIdGroup = $("#idGroup");
+		this.$placeHolder = $("#placeHolderImage");
+		this.$placeHolderAdd = $("#addTemplate");
+		this.$cloneItem = $("#cloneFileItem a");
 
 	},
 
@@ -54,6 +61,7 @@ var templateViewer = {
 		this.$editLink.on("click", this.editTemplate);
 		this.$addLink.on("click", this.addTemplate);
 		this.$templateForm.on("submit", this.uploadFiles);
+		this.$placeHolderAdd.on("click", this.addTemplate);
 
 	},
 
@@ -67,6 +75,7 @@ var templateViewer = {
 		templateViewer.$templateModal.find("h1").text("Add Template");
 		templateViewer.$modalType.val("add");
 		templateViewer.$templateModal.modal();
+		templateViewer.clearFileinput();
 	},
 
 	deleteTemplate: function(){
@@ -86,10 +95,16 @@ var templateViewer = {
 
 	displayErrorMessage: function(message){
 		this.$messageResult.removeClass("success no-display").addClass("error").find("span").html(message);
+		setTimeout(function(){
+			templateViewer.$messageResult.addClass("no-display");
+		}, 3000);
 	},
 
 	displaySuccessMessage: function(message){
 		this.$messageResult.removeClass("error no-display").addClass("success").find("span").html(message);
+		setTimeout(function(){
+			templateViewer.$messageResult.addClass("no-display");
+		}, 3000);
 	},
 
 	editTemplate: function(){
@@ -102,8 +117,9 @@ var templateViewer = {
 		templateViewer.$modalImage.html(templateViewer.$mainImageSrc.html());
 		templateViewer.$templateModal.find("h1").text("Edit Template");
 		templateViewer.$modalType.val("edit");
+		templateViewer.clearFileinput();
 		templateViewer.$templateModal.modal();
-	},
+	}, 
 
 	handleEditTemplateResult: function(objResult){
 		if(objResult.RESULT == "success"){
@@ -119,12 +135,17 @@ var templateViewer = {
 	handleNewTemplateResult: function(objResult){
 		if(objResult.RESULT == "success"){
 			templateViewer.displaySuccessMessage("Template SuccessFully Created");
-			//create the filmstrip item from clone
-			var clone = templateViewer.$thumbnails.first().clone();
+			//create the filmstrip item from clone, if none then use template
+			if(templateViewer.$thumbnails.length > 0){
+				var clone = templateViewer.$thumbnails.first().clone();
+			}else{
+				var clone = templateViewer.$cloneItem.clone();
+			}
 			clone.attr("title", objResult.ID).removeClass("active");
 			clone.find("img").attr("src", templateViewer.settings.thumbImageFolder + "/" + objResult.ID + "-m.jpg?" + templateViewer.timenow()).attr("alt", objResult.ID + "-m");
 			clone.find("span").html(objResult.ID);
-			$(".thumbnails .group a:last").after(clone);
+			console.log(clone);
+			$(".thumbnails .group").append(clone);
 			//Refresh the cached variable
 			templateViewer.$thumbnails = $(".thumbnails .group a");
 			//Move to the last item (created)
@@ -158,7 +179,8 @@ var templateViewer = {
 		//refresh the cached element
 		templateViewer.$thumbnails = $(".thumbnails .group a");
 		if(templateViewer.$thumbnails.length == 0){
-
+			templateViewer.$mainImage.addClass("hide");
+			templateViewer.$placeHolder.removeClass("hide");
 		}else if(templateViewer.$thumbnails.length < (index + 1)){
 			templateViewer.$thumbnails.eq(index - 1).trigger("click");
 		}else{
@@ -170,20 +192,31 @@ var templateViewer = {
 	setMainImage: function(e){
 		var main = $(this);
 
-		templateViewer.$thumbnails.removeClass("active");
-		main.addClass("active");
-		//make call to template controller to get data
-		$.get("/index.cfm?action=main.getTemplate", {id: main.attr("title")}, function(response){
-			var objResult = $.parseJSON(response);
-			templateViewer.$mainImageTitle.html(objResult.TITLE);
-			templateViewer.$mainImageDescription.html(objResult.DESCRIPTION);
-			templateViewer.$mainImageCost.html(objResult.COST);
-			templateViewer.$mainImageId.html(objResult.ID);
-			templateViewer.$mainImageThumb.html(objResult.THUMBNAIL);
-			templateViewer.$mainImageSrc.html(objResult.LARGE);
-			templateViewer.$mainImage.attr("src", templateViewer.settings.largeImageFolder + "/" + main.attr("title") + "-b.jpg?" + templateViewer.timenow() );
-			main.find("img").attr("src", templateViewer.settings.thumbImageFolder + "/" + main.attr("title") + "-m.jpg?" + templateViewer.timenow() );
-		});
+		//make sure we have thumbnails!
+		if(templateViewer.$thumbnails.length > 0){
+
+			templateViewer.$thumbnails.removeClass("active");
+			main.addClass("active");
+			//make call to template controller to get data
+			$.get("/index.cfm?action=main.getTemplate", {id: main.attr("title")}, function(response){
+				templateViewer.$placeHolder.addClass("hide");
+				templateViewer.$mainImage.removeClass("hide");
+				var objResult = $.parseJSON(response);
+				templateViewer.$mainImageTitle.html(objResult.TITLE);
+				templateViewer.$mainImageDescription.html(objResult.DESCRIPTION);
+				templateViewer.$mainImageCost.html(objResult.COST);
+				templateViewer.$mainImageId.html(objResult.ID);
+				templateViewer.$mainImageThumb.html(objResult.THUMBNAIL);
+				templateViewer.$mainImageSrc.html(objResult.LARGE);
+				templateViewer.$mainImage.attr("src", templateViewer.settings.largeImageFolder + "/" + main.attr("title") + "-b.jpg?" + templateViewer.timenow() );
+				main.find("img").attr("src", templateViewer.settings.thumbImageFolder + "/" + main.attr("title") + "-m.jpg?" + templateViewer.timenow() );
+			});
+		}else{
+			templateViewer.$mainImage.addClass("hide");
+			templateViewer.$placeHolder.removeClass("hide");
+		}
+
+		
 		return false;
 	},
 
@@ -281,8 +314,13 @@ var templateViewer = {
 				return parseInt(templateViewer.$thumbnailGroup.css("left")) + (groupWidth * (Math.floor(timesToScroll)));
 			}
 		}else{
-			return parseInt(templateViewer.$thumbnailGroup.css("left")) + groupWidth;
+			return 0;
 		}
+	},
+
+	clearFileinput: function(){
+        this.$modalFileUpload.replaceWith(this.$modalFileUpload.clone());
+	    this.$modalFileUpload = $("#templateFile");
 	},
 
 	timenow: function(){

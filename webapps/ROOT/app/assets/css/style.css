@@ -49,6 +49,13 @@ header {
 	width: 250px;
 }
 
+.crudGroup{
+	float:right;
+	text-align:left;
+	width:250px;
+	margin-top:30px;
+}
+
 .details p {
 	border-top: 1px solid #ddd;
 	font-size: 12px;
@@ -206,6 +213,26 @@ header {
 	color:#600100;
 }
 
+.crudButtons{
+	padding: 10px 15px;
+	color: #FFF;
+	background-color: #666;
+	text-decoration: none;
+	margin:3px;	
+}
+
+.crudButtons.delete{
+	background-color: #e24944;
+}
+
+.crudButtons.addTemplate{
+	background-color: #7ccc63;
+}
+
+#placeHolderImage div{
+	margin-top:150px;
+}
+
 .templateInputGroup {
 	text-align:left;
 }
@@ -213,6 +240,10 @@ header {
 	width:100%;
 	margin-bottom:5px;
 	line-height:20px;
+}
+
+.hide{
+	display:none;
 }
 
 #modalImage{
