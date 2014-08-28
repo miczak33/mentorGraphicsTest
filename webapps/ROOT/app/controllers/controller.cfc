@@ -1,9 +1,9 @@
 component accessors="true" {
-	
-	public function init(fw){
-		variables.fw = arguments.fw;
-		return this;
-	}
+
+        public function init(fw){
+                variables.fw = arguments.fw;
+                return this;
+        }
 
 	public function renderJSONAsHTML(required struct output){
 		var fileContent = toBinary(toBase64(serializeJSON(arguments.output)));

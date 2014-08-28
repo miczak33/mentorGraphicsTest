@@ -38,7 +38,6 @@ component accessors="true" extends="controller" {
 				message = response.errorMsg
 			};
 		}
-		//variables.fw.renderData("JSON", serializeJSON(jsonOutput));
 		renderJSONAsHTML(jsonOutput);
 	}
 
@@ -67,7 +66,6 @@ component accessors="true" extends="controller" {
 				message = response.errorMsg
 			}
 		}
-		//variables.fw.renderData("JSON", serializeJSON(jsonOutput));
 		renderJSONAsHTML(jsonOutput);
 	}
 

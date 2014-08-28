@@ -1,6 +1,8 @@
 component accessors="true" {
 
 	property name="templateDAO" getter="false";
+	property name="fileService" getter="false";
+	property name="imageService" getter="false";
 
 	public function init(){
 		return this;
@@ -21,14 +23,9 @@ component accessors="true" {
 		}
 
 		//put image
-		FileUpload(expandPath("/app/assets/img/large/#arguments.id#-b.jpg"), arguments.templateFile, "image/jpg", "overwrite");
+		variables.fileService.uploadFile(expandPath("/app/assets/img/large/#arguments.id#-b.jpg"), arguments.templateFile);
 		//now create a thumbnail version of the image 141x121
-		var thumbWidth = 141;
-		var thumbHeight = 121;
-		var savedTemplate = imageRead(expandPath("/app/assets/img/large/#arguments.id#-b.jpg"));
-		// imageSetAntialiasing(savedTemplate, "on");
-		imageScaleToFit(savedTemplate, thumbWidth, thumbHeight);
-		imageWrite(savedTemplate, expandPath("/app/assets/img/thumbnails/#arguments.id#-m.jpg"), true, .95);
+		variables.imageService.createThumbnail(expandPath("/app/assets/img/large/#arguments.id#-b.jpg"), expandPath("/app/assets/img/thumbnails/#arguments.id#-m.jpg"));
 
 		//now populate bean and pass it on
 		var objTemplate = new app.model.template.templateBean();		
@@ -57,15 +54,10 @@ component accessors="true" {
 	public function editTemplate(required numeric id, string title="", string description="", string cost="", string templateFile=""){
 		//check to see if upload is populated
 		if(len(arguments.templateFile)){
-			//put the image
-			FileUpload(expandPath("/app/assets/img/large/#arguments.id#-b.jpg"), arguments.templateFile, "image/jpg", "overwrite");
-			//now create a thumbnail version of the image 141x121
-			var thumbWidth = 141;
-			var thumbHeight = 121;
-			var savedTemplate = imageRead(expandPath("/app/assets/img/large/#arguments.id#-b.jpg"));
-			// imageSetAntialiasing(savedTemplate, "on");
-			imageScaleToFit(savedTemplate, thumbWidth, thumbHeight);
-			imageWrite(savedTemplate, expandPath("/app/assets/img/thumbnails/#arguments.id#-m.jpg"), true, .95);
+			//put image
+		variables.fileService.uploadFile(expandPath("/app/assets/img/large/#arguments.id#-b.jpg"), arguments.templateFile);
+		//now create a thumbnail version of the image 141x121
+		variables.imageService.createThumbnail(expandPath("/app/assets/img/large/#arguments.id#-b.jpg"), expandPath("/app/assets/img/thumbnails/#arguments.id#-m.jpg"));
 		}
 		//Now populate the bean and pass it to DAO
 		var objTemplate = new app.model.template.templateBean();		
