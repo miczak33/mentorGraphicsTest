@@ -1,26 +1,24 @@
+/**
+*
+* @file  templateService.cfc
+* @author  MZ
+* @description Service for interacting with bean and dao from the controller or other agent (API)
+*
+*/
+
 component accessors="true" {
 
+	//------------ DEPENDENCY INJECTION ------------//
 	property name="templateDAO" getter="false";
 	property name="fileService" getter="false";
 	property name="imageService" getter="false";
 
+	//-------------- CONSTRUCTOR -------------------//
 	public function init(){
 		return this;
 	}
 
-	public function getAllTemplates(){
-		var allTemplates = [];
-		allTemplates = variables.templateDAO.getTemplates();
-		if(!arrayLen(allTemplates)){
-			arrayAppend(allTemplates, new app.model.template.templateBean());
-		}
-		return allTemplates;
-	}
-
-	public function getTemplate(required numeric id){
-		return variables.templateDAO.getTemplate(arguments.id);
-	}
-
+	//-------------PUBLIC FUNCTIONS ----------------//
 	public function addTemplate(required numeric id, string title="", string description="", string cost="", string templateFile=""){
 		//check to see if upload was populated
 		if(!len(arguments.templateFile)){
@@ -74,6 +72,21 @@ component accessors="true" {
 		objTemplate.setLarge(arguments.id & "-b.jpg");
 
 		return variables.templateDAO.editTemplate(objTemplate);
+	}
+
+	public function getAllTemplates(){
+		var allTemplates = [];
+		//get all the templates for app
+		allTemplates = variables.templateDAO.getTemplates();
+		//if there are no templates, append blank bean to array
+		if(!arrayLen(allTemplates)){
+			arrayAppend(allTemplates, new app.model.template.templateBean());
+		}
+		return allTemplates;
+	}
+
+	public function getTemplate(required numeric id){
+		return variables.templateDAO.getTemplate(arguments.id);
 	}
 
 }

@@ -1,5 +1,8 @@
 var templateViewer = {
 
+	/*
+	* App settings
+	*/
 	settings: {
 		numberImagesToDisplay : 4,
 		largeImageFolder : "/app/assets/img/large",
@@ -8,6 +11,9 @@ var templateViewer = {
 		scrollSpeed : 500
 	},
 
+	/*
+	* Makeshift constructor for templateViewer module
+	*/
 	init: function(){
 		this.cacheElements();
 		this.bindUIElements();
@@ -17,6 +23,9 @@ var templateViewer = {
 		}
 	},
 
+	/*
+	* Cache elements on page for better performance
+	*/
 	cacheElements: function(){
 
 		this.$thumbnails = $(".thumbnails .group a");
@@ -52,6 +61,9 @@ var templateViewer = {
 
 	},
 
+	/*
+	* Bind elements for use 
+	*/
 	bindUIElements: function(){
 
 		$(document).on("click", ".thumbnails .group a", this.setMainImage);
@@ -65,6 +77,9 @@ var templateViewer = {
 
 	},
 
+	/*
+	* Triggers the modal and clears the form for new template
+	*/
 	addTemplate: function(){
 		templateViewer.$modalId.val("");
 		templateViewer.$modalIdGroup.show();
@@ -78,9 +93,11 @@ var templateViewer = {
 		templateViewer.clearFileinput();
 	},
 
+	/*
+	* Click event when delete button is pressed
+	*/
 	deleteTemplate: function(){
 		if(confirm("Are you sure you want to delete this template?")){
-			//TODO -- Make call to delete method, and update view.
 			$.get("/index.cfm?action=main.deleteTemplate", {id : templateViewer.$mainImageId.html()}, function(response){
 				var objResult = $.parseJSON(response);
 				if(objResult.RESULT == "successful"){
@@ -93,6 +110,9 @@ var templateViewer = {
 		return false;
 	},
 
+	/*
+	* Display error message when template is saved or edited unsuccessfully
+	*/
 	displayErrorMessage: function(message){
 		this.$messageResult.removeClass("success no-display").addClass("error").find("span").html(message);
 		setTimeout(function(){
@@ -100,6 +120,9 @@ var templateViewer = {
 		}, 3000);
 	},
 
+	/*
+	* Display successful message when template is saved or edited successfully
+	*/
 	displaySuccessMessage: function(message){
 		this.$messageResult.removeClass("error no-display").addClass("success").find("span").html(message);
 		setTimeout(function(){
@@ -107,6 +130,9 @@ var templateViewer = {
 		}, 3000);
 	},
 
+	/*
+	* Triggers the modal and populates the form with appropriate data
+	*/
 	editTemplate: function(){
 		//populate the modal
 		templateViewer.$modalId.val(templateViewer.$mainImageId.html());
@@ -121,6 +147,9 @@ var templateViewer = {
 		templateViewer.$templateModal.modal();
 	}, 
 
+	/*
+	* Handles view manipulation after a template is edited
+	*/
 	handleEditTemplateResult: function(objResult){
 		if(objResult.RESULT == "success"){
 			templateViewer.displaySuccessMessage("Template Successfully Updated");
@@ -132,6 +161,9 @@ var templateViewer = {
 		}
 	},
 
+	/*
+	* Handles view manipulation after a new template is submitted and created
+	*/
 	handleNewTemplateResult: function(objResult){
 		if(objResult.RESULT == "success"){
 			templateViewer.displaySuccessMessage("Template SuccessFully Created");
@@ -158,6 +190,9 @@ var templateViewer = {
 		}
 	},
 
+	/*
+	* Moves the filmstrip to last item, triggered when new image is created 
+	*/
 	moveToLastItem: function(){
 		var distance = templateViewer.calculateAnimationLastItem();
 		if(distance > 0){
@@ -168,10 +203,9 @@ var templateViewer = {
 		}
 	},
 
-	prepareUpload: function(e){
-		templateViewer.$modalFiles = e.target.files;
-	},
-
+	/*
+	* Remove Template from the view
+	*/
 	removeTemplate: function(){
 		var currentLink = $("a[title='"+templateViewer.$mainImageId.html()+"']");
 		var index = templateViewer.$thumbnails.index(currentLink);
@@ -189,6 +223,9 @@ var templateViewer = {
 		//set the next image
 	},
 
+	/*
+	* Sets the main image in the main display when thumb click event is triggered
+	*/
 	setMainImage: function(e){
 		var main = $(this);
 
@@ -220,6 +257,9 @@ var templateViewer = {
 		return false;
 	},
 
+	/*
+	* Scrolls the filmstrip right when next arrow is clicked
+	*/
 	scrollRight: function(e){
 
 		e.preventDefault();
@@ -241,6 +281,9 @@ var templateViewer = {
 
 	},
 
+	/*
+	* Scrolls the filmstrip left when previous arrow is clicked
+	*/
 	scrollLeft: function(e){
 
 		e.preventDefault();
@@ -261,6 +304,9 @@ var templateViewer = {
 
 	},
 
+	/*
+	* Uploads template file and saves the relevant information, using a nifty iframe trick
+	*/
 	uploadFiles: function(e){
 		//Inspiration from Ben NAdel
 		var submitType = (templateViewer.$modalType.val() == "add") ? "addTemplate" : "editTemplate";
@@ -293,6 +339,9 @@ var templateViewer = {
 
 	},
 
+	/*
+	* Calculate the amount of distance to scroll to either forward or backward
+	*/
 	calculateAnimationDistance : function(direction){
 		var groupWidth = (this.$thumbnails.outerWidth() + (templateViewer.settings.imageMargin * 2)) * templateViewer.settings.numberImagesToDisplay;
 		if(direction == "left"){
@@ -302,6 +351,9 @@ var templateViewer = {
 		}
 	},
 
+	/*
+	* Calculates the amount of distance to scroll to get to last film item
+	*/
 	calculateAnimationLastItem: function(){
 		var groupWidth = (templateViewer.$thumbnails.outerWidth() + (templateViewer.settings.imageMargin * 2)) * templateViewer.settings.numberImagesToDisplay;
 		var timesToScroll = (templateViewer.$thumbnails.length / templateViewer.settings.numberImagesToDisplay);
@@ -318,11 +370,17 @@ var templateViewer = {
 		}
 	},
 
+	/*
+	* Clears the file input from the dialog box
+	*/
 	clearFileinput: function(){
         this.$modalFileUpload.replaceWith(this.$modalFileUpload.clone());
 	    this.$modalFileUpload = $("#templateFile");
 	},
 
+	/*
+	* Generates a timestamp for use to combat browser image caching
+	*/
 	timenow: function(){
 		var now = new Date(),
 			ampm = "am",

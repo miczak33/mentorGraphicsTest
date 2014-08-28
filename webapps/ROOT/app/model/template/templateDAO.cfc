@@ -1,14 +1,25 @@
+/**
+*
+* @file  templateDAO.cfc
+* @author  MZ
+* @description Template DAO used for mediating between app and persistence
+*
+*/
+
 component accessors="true" implements="ITemplateDAO" {
 
+	//----------- DEPENDENCY INJECTION ----------//
 	property name="filePath";
 	property name="fileName";
 
+	//----------- CONSTRUCTOR -------------------//
 	public function init(string xmlPath="#expandPath('/app/model/persistence/xml/')#") {
 		setFilePath(arguments.xmlPath);
 		setFileName("template.xml");
 		return this;
 	}
 
+	//----------- PUBLIC METHODS ----------------//
 	public struct function addTemplate(required any template){
 		var result = {successful = true};
 		try{
@@ -141,6 +152,9 @@ component accessors="true" implements="ITemplateDAO" {
 
 	}
 
+
+	//---------------- PRIVATE METHODS ------------------//
+	
 	private function constructFilePath(){
 		return getFilePath() & getFileName();
 	}

@@ -1,3 +1,11 @@
+/**
+*
+* @file  ItemplateDAO.cfc
+* @author  MZ
+* @description Interface for all DAOs
+*
+*/
+
 interface {
 
 	public struct function addTemplate(required any template);

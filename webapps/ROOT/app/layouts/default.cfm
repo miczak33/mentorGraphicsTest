@@ -33,11 +33,3 @@
 </html>
 
 </cfoutput>
-
-
-<id>7124</id>
-		<title>My Great Template</title>
-		<description>This is a template suited for a professional business site. Original layered Photoshop .psd is included.</description>
-		<cost>$45</cost>
-		<thumbnail>7124-m.jpg</thumbnail>
-		<large>7124-b.jpg</large>

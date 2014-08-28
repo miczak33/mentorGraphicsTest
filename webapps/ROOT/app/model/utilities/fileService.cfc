@@ -1,3 +1,11 @@
+/**
+*
+* @file  fileService.cfc
+* @author  MZ
+* @description  File service for file uploads, etc
+*
+*/
+
 component accessors="true" {
 
 	public function init(){

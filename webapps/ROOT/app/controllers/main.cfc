@@ -1,26 +1,22 @@
+/**
+*
+* @file  Main.cfc
+* @author  MZ
+* @description Main Controller for application
+*
+*/
+
 component accessors="true" extends="controller" {
 
+	//------------- DEPENDENCY INJECTION ----------//
 	property name="templateService" getter="false";
 
+	//------------- CONSTRUCTOR -------------------//
 	public function index(rc){
 		rc.templates = variables.templateService.getAllTemplates();
 	}
 
-	public function getTemplate(rc){
-		var template = variables.templateService.getTemplate(rc.id);
-		var templateData = {
-			id = template.getId(),
-			title = template.getTitle(),
-			description = template.getDescription(),
-			cost = template.getCost(),
-			thumbnail = template.getThumbnail(),
-			large = template.getLarge(),
-			largeFilePath = template.getLargeFilePath(),
-			thumbnailFilePath = template.getThumbnailFilePath()
-		};
-		variables.fw.renderData("JSON", serializeJSON(templateData));	
-	}
-
+	//------------- PUBLIC METHODS ----------------//
 	public function addTemplate(rc){
 		var jsonOutput = "";
 		var response = variables.templateService.addTemplate(rc.modalId, rc.modalTitle, rc.modalDescription, rc.modalCost, rc.templateFile);
@@ -67,6 +63,21 @@ component accessors="true" extends="controller" {
 			}
 		}
 		renderJSONAsHTML(jsonOutput);
+	}
+
+	public function getTemplate(rc){
+		var template = variables.templateService.getTemplate(rc.id);
+		var templateData = {
+			id = template.getId(),
+			title = template.getTitle(),
+			description = template.getDescription(),
+			cost = template.getCost(),
+			thumbnail = template.getThumbnail(),
+			large = template.getLarge(),
+			largeFilePath = template.getLargeFilePath(),
+			thumbnailFilePath = template.getThumbnailFilePath()
+		};
+		variables.fw.renderData("JSON", serializeJSON(templateData));	
 	}
 
 }
