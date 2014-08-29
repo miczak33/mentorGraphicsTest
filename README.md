@@ -11,4 +11,8 @@ For PC, you can just double-click the start.bat file
 
 The railo server should start up so give it a second. After this, you can navigate to localhost:8888 to run the app
 
-**If you are running a 32-bit Windows OS or running linux then you can download railo express**  [Here](http://www.getrailo.org/index.cfm/download/)
+###For windows 32-bit OS or Linux
+You'll need to download railo express [Here](http://www.getrailo.org/index.cfm/download/)
+Follow the installation instructions found on that same installation page.
+Then copy the contents of PC-64/webapps/ROOT/ to the corresponding webroot of the download
+
