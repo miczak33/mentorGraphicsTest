@@ -13,6 +13,8 @@ The railo server should start up so give it a second. After this, you can naviga
 
 ###For windows 32-bit OS or Linux
 You'll need to download railo express [Here](http://www.getrailo.org/index.cfm/download/)
+
 Follow the installation instructions found on that same installation page.
+
 Then copy the contents of PC-64/webapps/ROOT/ to the corresponding webroot of the download
 
