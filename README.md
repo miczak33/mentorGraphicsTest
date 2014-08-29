@@ -5,6 +5,7 @@ Mentor Graphics Test Project
 
 ###For Windows 64-bit OS or OSX
 Navigate to the appropriate folder depending on what OS you are running (PC, MAC)
+
 For Mac run:
 >./start
 
