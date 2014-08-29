@@ -186,7 +186,7 @@ var templateViewer = {
 			templateViewer.$thumbnails.last().trigger("click");	
 
 		}else{
-			templateViewer.displayErrorMessage("Error Creating Template");
+			templateViewer.displayErrorMessage(objResult.MESSAGE);
 		}
 	},
 
@@ -310,6 +310,11 @@ var templateViewer = {
 	uploadFiles: function(e){
 		//Inspiration from Ben NAdel
 		var submitType = (templateViewer.$modalType.val() == "add") ? "addTemplate" : "editTemplate";
+		//validate the form
+		if(!templateViewer.validateForm()){
+			alert("The Id must be a valid integer");
+			return false;
+		}
 		var jThis = $(this);
 		var strName = ("uploader" + (new Date()).getTime());
 		var jFrame = $( "<iframe name=\"" + strName + "\" src=\"about:blank\" />" );
@@ -337,6 +342,18 @@ var templateViewer = {
  		
         jThis.attr( "action", "/index.cfm?action=main." + submitType ).attr( "method", "post" ).attr( "enctype", "multipart/form-data" ).attr( "encoding", "multipart/form-data" ).attr( "target", strName );          
 
+	},
+
+	/*
+	* Validate the template form
+	*/
+	validateForm: function(){
+		//Only validate the Id for now
+		var success = true;
+		if(isNaN(templateViewer.$modalId.val()) || templateViewer.$modalId.val() == ""){
+			success = false;
+		}
+		return success;
 	},
 
 	/*

@@ -105,14 +105,19 @@ component accessors="true" implements="ITemplateDAO" {
 	}
 
 	public any function getTemplate(required numeric id){
+		//Create template bean
+		var objTemplate = new app.model.template.templateBean();
 		//Load the file
 		var objFile = fileRead(constructFilePath());
 		//Parse the file
 		var xmlTemplates = xmlParse(objFile);
 		//Search for the Id using xpath
 		var selectedElement = xmlSearch(xmlTemplates, "//*[text()='#arguments.id#']/..");
+		//If the array is empty no node was found.  Return empty
+		if(!arrayLen(selectedElement)){
+			return objTemplate;
+		}
 		//Populate template bean
-		var objTemplate = new app.model.template.templateBean();
 		objTemplate.setId(selectedElement[1].xmlChildren[1].xmlText);
 		objTemplate.setTitle(selectedElement[1].xmlChildren[2].xmlText);
 		objTemplate.setDescription(selectedElement[1].xmlChildren[3].xmlText);

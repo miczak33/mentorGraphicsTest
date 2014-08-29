@@ -80,4 +80,10 @@ component accessors="true" extends="controller" {
 		variables.fw.renderData("JSON", serializeJSON(templateData));	
 	}
 
+	public function testTemplate(rc){
+		var template = variables.templateService.templateExists(7111);
+		writeDump(template);
+		abort;
+	}
+
 }

@@ -25,6 +25,11 @@ component accessors="true" {
 			return {successful = false, errorMsg = "No template was uploaded"};
 		}
 
+		//check to see if there is a duplicate
+		if(templateExists(arguments.id)){
+			return {successful = false, errorMsg = "Template Id already exists"};
+		}
+
 		//put image
 		variables.fileService.uploadFile(expandPath("/app/assets/img/large/#arguments.id#-b.jpg"), arguments.templateFile);
 		//now create a thumbnail version of the image 141x121
@@ -93,6 +98,15 @@ component accessors="true" {
 
 	public function getTemplate(required numeric id){
 		return variables.templateDAO.getTemplate(arguments.id);
+	}
+
+	public function templateExists(required numeric id){
+		var template = getTemplate(arguments.id);
+		if(len(template.getId())){
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 }
