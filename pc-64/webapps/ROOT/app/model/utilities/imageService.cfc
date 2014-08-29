@@ -50,7 +50,7 @@ component output="false" accessors="true"  {
 		try{
 			fileDelete(arguments.imagePath);
 		}catch(any e){
-			throw "An error occurred while trying to delete the image - #e.message#";
+			//log image error message
 		}
 		return result;
 	}
