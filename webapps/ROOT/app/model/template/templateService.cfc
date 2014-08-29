@@ -51,7 +51,13 @@ component accessors="true" {
 	}
 
 	public function deleteTemplate(required numeric id){
-		return variables.templateDAO.deleteTemplate(arguments.id);
+		var result = variables.templateDAO.deleteTemplate(arguments.id);
+		if(result.successful){
+			//remove the image from directories
+			variables.imageService.removeImage(expandPath("/app/assets/img/large/#arguments.id#-b.jpg"));
+			variables.imageService.removeImage(expandPath("/app/assets/img/thumbnails/#arguments.id#-m.jpg"));
+		}
+		return result;
 	}
 
 	public function editTemplate(required numeric id, string title="", string description="", string cost="", string templateFile=""){

@@ -44,5 +44,15 @@ component output="false" accessors="true"  {
 		}
 		return result;
 	}
+
+	public function removeImage(required string imagePath){
+		var result = "success";
+		try{
+			fileDelete(arguments.imagePath);
+		}catch(any e){
+			throw "An error occurred while trying to delete the image - #e.message#";
+		}
+		return result;
+	}
 		
 }
